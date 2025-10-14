@@ -19,8 +19,8 @@ namespace E_Commerce.API
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwagger();   //Middlewares ==> swagger
+                app.UseSwaggerUI(); //Middlewares ==> swagger
             }
 
             app.UseHttpsRedirection();
