@@ -4,6 +4,8 @@ using Presistence.Data;
 using Presistence.Data.Contexts;
 using Presistence.Repositories;
 using Services;
+using Services.Abstraction.Contracts;
+using Services.Implementations;
 
 namespace E_Commerce.API
 {
@@ -26,6 +28,7 @@ namespace E_Commerce.API
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(cfg => { }, typeof(AssemblyReference).Assembly);
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
             var app = builder.Build();
             using var scope = app.Services.CreateScope();
             var dataSeedingObject = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
