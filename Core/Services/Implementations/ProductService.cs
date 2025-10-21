@@ -2,6 +2,7 @@
 using Domain.Contracts;
 using Domain.Entities.ProductModule;
 using Services.Abstraction.Contracts;
+using Services.Specifications;
 using Shared.Dtos;
 
 namespace Services.Implementations
@@ -19,7 +20,8 @@ namespace Services.Implementations
 
         public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync()
         {
-            var products = await  _unitOfWork.GetRepository<Product, int>().GetAllAsync();
+            var specifications = new ProductWithBrandAndTypeSpecifictaions();
+            var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(specifications);
             var productResult = _mapper.Map<IEnumerable<ProductResultDto>>(products);
             return productResult;
         }
@@ -33,7 +35,8 @@ namespace Services.Implementations
 
         public async Task<ProductResultDto> GetProductByIdAsync(int id)
         {
-            var product = await  _unitOfWork.GetRepository<Product, int>().GetByIdAsync(id);
+            var specifications = new ProductWithBrandAndTypeSpecifictaions(id);
+            var product = await  _unitOfWork.GetRepository<Product, int>().GetByIdAsync(specifications);
             var productResult = _mapper.Map<ProductResultDto>(product);
             return productResult;
         }
