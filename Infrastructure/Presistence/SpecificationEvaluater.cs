@@ -14,6 +14,13 @@ namespace Presistence
             if (specifications.Criteria is not null)
                 query = query.Where(specifications.Criteria);
 
+            // Apply Sorting
+            if (specifications.OrderBy is not null)
+                query = query.OrderBy(specifications.OrderBy);
+
+            if (specifications.OrderByDescending is not null)
+                query = query.OrderByDescending(specifications.OrderByDescending);
+
             // Apply Includes
             if (specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Count > 0)
             {

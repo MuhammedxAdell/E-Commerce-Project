@@ -10,5 +10,9 @@ namespace Domain.Contracts
 
         // Signature for Prperty [Expressions ==> Include]
         public List<Expression<Func<TEnitiy , object>>> IncludeExpressions { get; }
+
+        // OrderBy , OrderByDescending [Expression]
+        public Expression<Func<TEnitiy, object>> OrderBy { get;  }
+        public Expression<Func<TEnitiy, object>> OrderByDescending { get; }
     }
 }
