@@ -31,6 +31,10 @@ namespace Presistence
                     .Aggregate(query, (currentQuery, exp) => currentQuery.Include(exp)); // Using Aggregate to apply all includes
             }
 
+            // Apply Pagination
+            if (specifications.IsPaginated)
+                query = query.Skip(specifications.Skip).Take(specifications.Take);
+
             return query;
         }
     }

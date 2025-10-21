@@ -44,6 +44,8 @@ namespace Services.Specifications
                 default:
                     break;
             }
+            //Pagination
+            ApplyPagination(parameters.PageSize , parameters.PageIndex);
         }
 
         // Get Product By Id ==> Include : ProductBrand and ProductType
