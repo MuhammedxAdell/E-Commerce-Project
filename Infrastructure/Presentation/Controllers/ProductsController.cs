@@ -10,8 +10,8 @@ namespace Presentation.Controllers
     {
         //EndPoint ==> GetAllProducts
         [HttpGet] //BaseUrl/api/products
-        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProducts()
-            => Ok(await _serviceManager.ProductService.GetAllProductsAsync());
+        public async Task<ActionResult<IEnumerable<ProductResultDto>>> GetAllProducts(int? typeId , int? brandId)
+            => Ok(await _serviceManager.ProductService.GetAllProductsAsync(typeId , brandId));
 
         //EndPoint ==> GetAllBrands
         [HttpGet("Brands")] //BaseUrl/api/products/Brands
