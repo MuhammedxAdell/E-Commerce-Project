@@ -1,4 +1,5 @@
 using Domain.Contracts;
+using E_Commerce.API.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Presistence.Data;
 using Presistence.Data.Contexts;
@@ -15,24 +16,32 @@ namespace E_Commerce.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
+            // Web API Services
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //Infrastructure Services
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Core Services
             builder.Services.AddAutoMapper(cfg => { }, typeof(AssemblyReference).Assembly);
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             var app = builder.Build();
             using var scope = app.Services.CreateScope();
             var dataSeedingObject = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
             await dataSeedingObject.SeedDataAsync();
+
+
+            //Middleware ==> Handle exceptions
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
