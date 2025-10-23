@@ -1,15 +1,4 @@
-using Domain.Contracts;
 using E_Commerce.API.Extensions;
-using E_Commerce.API.Factories;
-using E_Commerce.API.Middlewares;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Presistence.Data;
-using Presistence.Data.Contexts;
-using Presistence.Repositories;
-using Services;
-using Services.Abstraction.Contracts;
-using Services.Implementations;
 
 namespace E_Commerce.API
 {
