@@ -1,5 +1,8 @@
 ﻿using Domain.Contracts;
+using Domain.Entities.IdentityModule;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Presistence.Data;
 using Presistence.Data.Contexts;
 using Presistence.Identity;
@@ -27,6 +30,15 @@ namespace E_Commerce.API.Extensions
             {
                return ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisConnection")!);
             });
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<IdentityStoreDbContext>();
+            //services.AddIdentityCore<User>().AddRoles<IdentityRole>().AddEntityFrameworkStores<IdentityStoreDbContext>();
             services.AddScoped<IBasketRepository, BasketRepository>();
 
             return services;
