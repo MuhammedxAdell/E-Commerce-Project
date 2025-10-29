@@ -8,6 +8,8 @@ namespace Services.Abstraction.Contracts
         Task<UserResultDto> LoginAsync(LoginDto loginDto);
         //Register  ==> return UserResultDto [ DisplayName , Token , Email ] ==> Take Params [ DisplayName , Email , Password , PhoneNumber , UserName ]
         Task<UserResultDto> RegisterAsync(RegisterDto registerDto);
+        //Get All Users ==> return List of UserResultDto [ DisplayName , Token , Email ]
+        Task<IEnumerable<UserResultDto>> GetAllUsersAsync();
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.IdentityModule;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Services.Abstraction.Contracts;
 using Shared.Dtos.IdentityModule;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,19 @@ namespace Services.Implementations
 {
     public class AuthenticationService(UserManager<User> _userManager) : IAuthenticationService
     {
+        public async Task<IEnumerable<UserResultDto>> GetAllUsersAsync()
+        {
+           
+            var users = _userManager.Users.Select(user => new UserResultDto
+            (
+                user.DisplayName,
+                //The token should be hidden
+                "",
+                user.Email
+            ));
+            return await users.ToListAsync();
+        }
+
         public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
         {
             //Email exists ?
