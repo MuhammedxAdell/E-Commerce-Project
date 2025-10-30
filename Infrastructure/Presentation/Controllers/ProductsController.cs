@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.Contracts;
 using Shared;
@@ -8,7 +9,6 @@ using Shared.ErrorModels;
 
 namespace Presentation.Controllers
 {
-    
     public class ProductsController(IServiceManager _serviceManager) : ApiController
     {
         //EndPoint ==> GetAllProducts

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.Contracts;
 using Shared.Dtos.IdentityModule;
 
@@ -16,6 +17,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult<UserResultDto>> LoginAsync(LoginDto loginDto)
             => Ok( await _serviceManager.AuthenticatioService.LoginAsync(loginDto));
 
+        [Authorize(Roles = "Admin")]
         //Get ==> Get all users
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<IEnumerable<UserResultDto>>> GetAllUsersAsync()

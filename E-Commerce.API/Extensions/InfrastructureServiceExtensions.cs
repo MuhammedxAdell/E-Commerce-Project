@@ -1,13 +1,17 @@
 ﻿using Domain.Contracts;
 using Domain.Entities.IdentityModule;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Presistence.Data;
 using Presistence.Data.Contexts;
 using Presistence.Identity;
 using Presistence.Repositories;
+using Shared.Common;
 using StackExchange.Redis;
+using System.Text;
 
 namespace E_Commerce.API.Extensions
 {
@@ -40,7 +44,31 @@ namespace E_Commerce.API.Extensions
             }).AddEntityFrameworkStores<IdentityStoreDbContext>();
             //services.AddIdentityCore<User>().AddRoles<IdentityRole>().AddEntityFrameworkStores<IdentityStoreDbContext>();
             services.AddScoped<IBasketRepository, BasketRepository>();
-
+            services.ValidateJwt(configuration);
+            return services;
+        }
+        
+        public static IServiceCollection ValidateJwt(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOption>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; 
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
+                };
+            });
+            services.AddAuthorization();
             return services;
         }
     }
