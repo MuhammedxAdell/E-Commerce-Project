@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities.BasketModule;
-using Domain.Entities.IdentityModule;
 using Domain.Entities.OrderModule;
 using Domain.Entities.ProductModule;
 using Domain.Exceptions;
@@ -73,11 +72,11 @@ namespace Services.Implementations
 
         }
 
-        public Task<IEnumerable<OrderResult>> GetOrdersByEmailAsync(string userEmail)
+        public async Task<IEnumerable<OrderResult>> GetOrdersByEmailAsync(string userEmail)
         {
-            var orders =  _unitOfWork.GetRepository<Order, Guid>()
+            var orders = await  _unitOfWork.GetRepository<Order, Guid>()
                 .GetAllAsync(new OrderWithIncludesSpecefications(userEmail));
-            return _mapper.Map<Task<IEnumerable<OrderResult>>>(orders);
+            return _mapper.Map<IEnumerable<OrderResult>>(orders);
         }
     }
 }
