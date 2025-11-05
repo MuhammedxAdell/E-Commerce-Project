@@ -9,7 +9,7 @@ using Shared.Common;
 
 namespace Services.Implementations
 {
-    public class ServiceManager(IUnitOfWork _unitOfWork, IMapper _mapper, IBasketRepository _basketRepository, UserManager<User> _userManager, IOptions<JwtOption> _options , IConfiguration _configuration) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, IMapper _mapper, IBasketRepository _basketRepository, UserManager<User> _userManager, IOptions<JwtOption> _options , IConfiguration _configuration) /*: IServiceManager*/
     {
         private readonly Lazy<IProductService> _productService = new Lazy<IProductService>(() => new ProductService(_unitOfWork , _mapper));
         private readonly Lazy<IBasketService> _basketService = new Lazy<IBasketService>(() => new BasketService(_basketRepository, _mapper));

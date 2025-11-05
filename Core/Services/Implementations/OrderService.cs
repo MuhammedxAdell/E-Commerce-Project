@@ -11,7 +11,7 @@ using Address = Domain.Entities.OrderModule.Address;
 
 namespace Services.Implementations
 {
-    internal class OrderService(IMapper _mapper , IBasketRepository _basketRepository , IUnitOfWork _unitOfWork) : IOrderSevice
+    public class OrderService(IMapper _mapper , IBasketRepository _basketRepository , IUnitOfWork _unitOfWork) : IOrderSevice
     {
         public async Task<OrderResult> CreateOrderAsync(OrderRequest orderRequest, string userEmail)
         {

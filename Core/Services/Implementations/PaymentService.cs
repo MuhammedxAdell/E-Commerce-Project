@@ -13,7 +13,7 @@ using Order = Domain.Entities.OrderModule.Order;
 
 namespace Services.Implementations
 {
-    internal class PaymentService(IConfiguration _configuration, IBasketRepository _basketRepository, IUnitOfWork _unitOfWork, IMapper _mapper) : IPaymentService
+    public class PaymentService(IConfiguration _configuration, IBasketRepository _basketRepository, IUnitOfWork _unitOfWork, IMapper _mapper) : IPaymentService
     {
         //public async Task<BasketDto?> CreateOrUpdatePaymentIntentAsync(string basketId)
         //{
