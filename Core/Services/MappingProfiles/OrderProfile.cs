@@ -12,7 +12,8 @@ namespace Services.MappingProfiles
         {
             CreateMap<ShippingAddress, AddressDto>().ReverseMap();
             CreateMap<IdentityAddress, AddressDto>().ReverseMap();
-            CreateMap<DeliveryMethod , DeliveryMethodResult>();
+            CreateMap<DeliveryMethod , DeliveryMethodResult>()
+                .ForMember(dest => dest.Cost, options => options.MapFrom(s => s.Price));
             CreateMap<OrderItem , OrderItemDto>()
                 .ForMember(dest => dest.ProductId, options => options.MapFrom(s => s.Product.ProductId))
                 .ForMember(dest => dest.ProductName, options => options.MapFrom(s => s.Product.ProductName))
