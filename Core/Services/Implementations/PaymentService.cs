@@ -5,13 +5,15 @@ using Domain.Entities.OrderModule;
 using Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Services.Abstraction.Contracts;
+using Services.Specifications;
 using Shared.Dtos.BasketModule;
 using Stripe;
 using Product = Domain.Entities.ProductModule.Product;
+using Order = Domain.Entities.OrderModule.Order;
 
 namespace Services.Implementations
 {
-    internal class PaymentService(IConfiguration _configuration , IBasketRepository _basketRepository , IUnitOfWork _unitOfWork , IMapper _mapper) : IPaymentService
+    internal class PaymentService(IConfiguration _configuration, IBasketRepository _basketRepository, IUnitOfWork _unitOfWork, IMapper _mapper) : IPaymentService
     {
         //public async Task<BasketDto?> CreateOrUpdatePaymentIntentAsync(string basketId)
         //{
@@ -154,6 +156,61 @@ namespace Services.Implementations
         {
             return await _basketRepository.GetBasketAsync(basketId)
                 ?? throw new BasketNotFoundException(basketId);
+        }
+
+        public async Task UpadatePaymentStatusAsync(string json, string signatureHeader)
+        {
+            string endpointSecret = _configuration.GetSection("StripeSettings")["EndpointSecret"];
+   
+            var stripeEvent = EventUtility.ParseEvent(json ,throwOnApiVersionMismatch:false );
+            
+            stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret , throwOnApiVersionMismatch: false);
+
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+
+            if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
+            {
+                //Change order status to PaymentReceived
+                await UpdatePaymentStatusRevievedAsync(paymentIntent.Id);
+            }
+            else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
+            {
+                //Change order status to PaymentFailed
+                await UpdatePaymentStatusFailedAsync(paymentIntent.Id);
+            }
+            else
+            {
+                // Unexpected event type
+                Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+            }            
+        }
+
+        private async Task UpdatePaymentStatusFailedAsync(string paymentIntentId)
+        {
+            var oderRepository = _unitOfWork.GetRepository<Order, Guid>();
+            var order = await oderRepository
+                .GetByIdAsync(new OrderWithPaymentIntentIdSpecifications(paymentIntentId));
+
+            if (order is not null)
+            {
+                order.PaymentStatus = OrderPaymentStatus.PaymentFailed;
+                oderRepository.Update(order);
+                await _unitOfWork.SaveChangesAsync();
+            }
+        }
+
+        private async Task UpdatePaymentStatusRevievedAsync(string paymentIntentId)
+        {
+            var oderRepository = _unitOfWork.GetRepository<Order, Guid>();
+            var order = await oderRepository
+                .GetByIdAsync(new OrderWithPaymentIntentIdSpecifications(paymentIntentId));
+
+            if (order is not null)
+            {
+                order.PaymentStatus = OrderPaymentStatus.PaymentRecived;
+                oderRepository.Update(order);
+                await _unitOfWork.SaveChangesAsync();
+            }
         }
     }
 }
