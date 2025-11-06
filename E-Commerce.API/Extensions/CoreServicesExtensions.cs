@@ -27,6 +27,9 @@ namespace E_Commerce.API.Extensions
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<Func<IBasketService>>(provider => () => provider.GetRequiredService<IBasketService>());
 
+            services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<Func<ICacheService>>(provider => () => provider.GetRequiredService<ICacheService>());
+
             services.Configure<JwtOption>(configuration.GetSection("JwtOptions")); //IOptions
             return services;
         }
