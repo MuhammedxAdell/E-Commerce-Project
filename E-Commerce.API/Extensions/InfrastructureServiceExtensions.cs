@@ -44,6 +44,7 @@ namespace E_Commerce.API.Extensions
             }).AddEntityFrameworkStores<IdentityStoreDbContext>();
             //services.AddIdentityCore<User>().AddRoles<IdentityRole>().AddEntityFrameworkStores<IdentityStoreDbContext>();
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<ICacheRepository , CacheRepository>();
             services.ValidateJwt(configuration);
             return services;
         }
