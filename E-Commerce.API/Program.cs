@@ -12,7 +12,7 @@ namespace E_Commerce.API
             #region DI Container
 
             // Web API Services
-            builder.Services.AddWebApiServiers();
+            builder.Services.AddWebApiServiers(builder.Configuration);
 
             //Infrastructure Services
             builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -38,6 +38,7 @@ namespace E_Commerce.API
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication(); // step 1
             app.UseAuthorization(); //  step 2

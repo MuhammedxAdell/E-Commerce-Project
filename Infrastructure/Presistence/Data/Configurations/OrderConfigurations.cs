@@ -9,7 +9,9 @@ namespace Presistence.Data.Configurations
         {
             builder.OwnsOne(o => o.ShippingAddress, sa => sa.WithOwner());
             builder.HasMany(o => o.OrderItems)
-                   .WithOne();
+                   .WithOne()
+                   .OnDelete(DeleteBehavior.Cascade);
+
             builder.Property( o => o.PaymentStatus).HasConversion(
                 ps => ps.ToString(), ps => Enum.Parse<OrderPaymentStatus>(ps));
 

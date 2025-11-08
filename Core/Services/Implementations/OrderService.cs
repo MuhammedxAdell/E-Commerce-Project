@@ -16,13 +16,13 @@ namespace Services.Implementations
         public async Task<OrderResult> CreateOrderAsync(OrderRequest orderRequest, string userEmail)
         {
             //1- Map to AddressDto to Address
-            var address = _mapper.Map<Address>(orderRequest.ShippingAddress);
+            var address = _mapper.Map<Address>(orderRequest.ShipToAddress);
 
             //2- GetOrderItems ==> BasketId ==> Basket ==> BasketItems [ Id ]
             var basket = await  _basketRepository.GetBasketAsync(orderRequest.BasketId)
                 ?? throw new BasketNotFoundException(orderRequest.BasketId);
             var orderItems = new List<OrderItem>();
-            foreach (var item in basket.BasketItems)
+            foreach (var item in basket.Items)
             {
                 var product = await _unitOfWork.GetRepository<Product , int>()
                     .GetByIdAsync(item.Id)
@@ -32,17 +32,26 @@ namespace Services.Implementations
                 
             }
 
+            var orderRepository = _unitOfWork.GetRepository<Order , Guid>();
+
             //3- GetDeliveryMethod ==> DeliveryMethodId ==> Db
             var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod , int>()
                 .GetByIdAsync(orderRequest.DeliveryMethodId)
                 ?? throw new DeliveryMethodNotFoundException(orderRequest.DeliveryMethodId);
 
+            var orderExists = await orderRepository.GetByIdAsync(new OrderWithPaymentIntentIdSpecifications(basket.PaymentIntentId));
+            if(orderExists != null)
+            {
+                orderRepository.Delete(orderExists);
+                await _unitOfWork.SaveChangesAsync();
+            }
+
             //4- Calculate SubTotal ==> OrderItems ==> OrderItem.Q * OrderItem.Price + ...
             var subTotal = orderItems.Sum(oi => oi.Price * oi.Quantity);
 
             //5- Create Order obj ==> params , Add Db , Save Changes
-            var order = new Order(userEmail , address , orderItems , deliveryMethod , subTotal);
-            await _unitOfWork.GetRepository<Order , Guid>().AddAsync(order);
+            var order = new Order(userEmail , address , orderItems , deliveryMethod , subTotal, basket.PaymentIntentId);
+            await orderRepository.AddAsync(order);
             await _unitOfWork.SaveChangesAsync();
 
             //6- Return Map Order to OrderResult
