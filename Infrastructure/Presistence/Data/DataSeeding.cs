@@ -1,11 +1,14 @@
 ﻿using Domain.Contracts;
+using Domain.Entities.IdentityModule;
+using Microsoft.AspNetCore.Identity;
 using Presistence.Data.Contexts;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Presistence.Data
 {
-    public class DataSeeding(StoreDbContext _dbContext) : IDataSeeding
+    public class DataSeeding(StoreDbContext _dbContext , RoleManager<IdentityRole> _roleManager,
+        UserManager<User> _userManager) : IDataSeeding
     {
         public async Task SeedDataAsync()
         {
@@ -48,6 +51,49 @@ namespace Presistence.Data
             catch (Exception ex)
             {
                 //Handle ex
+            }
+        }
+
+        public async Task SeedIdentityDataAsync()
+        {
+            try
+            {
+                //1- Seed roles [Admin , SuperAdmin]
+                if (!_roleManager.Roles.Any())
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    await _roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+                }
+                //2- Seed users [AdminUser , SuperAdminUser]
+
+                if (!_userManager.Users.Any())
+                {
+                    var adminUser = new User
+                    {
+                        DisplayName = "Admin",
+                        UserName = "Admin",
+                        Email = "Admin@gmail.com",
+                        PhoneNumber = "1234567890",
+                    };
+                    var superAdminUser = new User
+                    {
+                        DisplayName = "SuperAdmin",
+                        UserName = "SuperAdmin",
+                        Email = "SuperAdmin@gmail.com",
+                        PhoneNumber = "0123456789",
+                    };
+                    await _userManager.CreateAsync(adminUser, "P@ssw0rd");
+                    await _userManager.CreateAsync(superAdminUser, "Pa$$w0rd");
+
+                    //3- Assign users to roles
+                    await _userManager.AddToRoleAsync(adminUser, "Admin");
+                    await _userManager.AddToRoleAsync(superAdminUser, "SuperAdmin");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
     }
